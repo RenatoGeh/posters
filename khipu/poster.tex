@@ -8,12 +8,14 @@
 \usepackage{amsthm}
 \usepackage{multicol}
 \usepackage{hyperref}
+\usepackage{subcaption}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
 \usepackage{graphicx}
 \usepackage{tikz}
 \usetikzlibrary{positioning}
+\usetikzlibrary{shapes}
 \usetikzlibrary{shapes.geometric}
 \usetikzlibrary{fit}
 \usetikzlibrary{calc}
@@ -59,7 +61,8 @@ headershape=rounded, % Specify the rounded corner in the content box headers, ca
 headershade=plain,
 headerfont=\Large\textsf, % Large, bold and sans serif font in the headers of content boxes
 %textfont={\setlength{\parindent}{1.5em}}, % Uncomment for paragraph indentation
-linewidth=2pt % Width of the border lines around content boxes
+linewidth=2pt, % Width of the border lines around content boxes
+columns=6
 }
 {}
 %
@@ -81,7 +84,7 @@ Renato Lui Geh, Denis Deratani Mauá
 \{renatolg,ddm\}@ime.usp.br}
 }
 {\includegraphics[scale=0.14]{ime.pdf}} % University/lab logo
-\headerbox{1. Task}{name=task,column=0,row=0, span=3}{
+\headerbox{1. Task}{name=task,column=0,row=0, span=6}{
   \begin{center}
     \begin{minipage}{0.98\textwidth}
       \begin{minipage}{0.4\textwidth}
@@ -99,7 +102,7 @@ Renato Lui Geh, Denis Deratani Mauá
     \end{minipage}
   \end{center}
 }
-\headerbox{2. Sum-Product Networks}{name=spn,span=1,column=0,below=task}{
+\headerbox{2. Sum-Product Networks}{name=spn,span=2,column=0,below=task}{
   \begin{center}
     \begin{minipage}[t][8.25cm]{0.98\textwidth}
       Sum-product networks (SPNs) are deep tractable density estimators with a neural network-like
@@ -146,10 +149,17 @@ Renato Lui Geh, Denis Deratani Mauá
     \end{minipage}
   \end{center}
 }
-\headerbox{3. Inference in SPNs}{name=inf,span=1,column=1,below=task}{
+\headerbox{3. Inference in SPNs}{name=inf,span=2,column=2,below=task}{
   \begin{center}
     \begin{minipage}[t][8.25cm]{0.98\textwidth}
-      The probability of evidence of $\mathbf{e}=\{X_1=1,X_2=0\}$ is the value of its root.
+      The probability of evidence of
+      \vspace{-0.2cm}
+      \begin{center}
+        $\mathbf{e}=\{X_1=1,X_2=0\}$
+      \end{center}
+      \vspace{-0.2cm}
+      is the value of the SPN's root.
+      \vspace{-0.3cm}
       \begin{center}
         \begin{tikzpicture}
           \begin{scope}[every node/.style={circle,draw,inner sep=2pt}]
@@ -195,10 +205,160 @@ Renato Lui Geh, Denis Deratani Mauá
     \end{minipage}
   \end{center}
 }
+\headerbox{4. Lane Following as Classification}{name=class,span=2,column=4,below=task}{
+  \begin{center}
+    \begin{minipage}[t][8.25cm]{0.98\textwidth}
+      Actions the agent can take are turning left, right or going straight.
 
-\headerbox{7. References and Acknowledgements} {name=references,column=0,span=3,below=spn}{
+      \begin{center}
+        \includegraphics[width=0.3\textwidth]{sample_left.png}
+        \includegraphics[width=0.3\textwidth]{sample_up.png}
+        \includegraphics[width=0.3\textwidth]{sample_right.png}
+        \begin{minipage}{0.3\textwidth}
+          \centering\texttt{LEFT}
+        \end{minipage}
+        \begin{minipage}{0.3\textwidth}
+          \centering\texttt{FORWARD}
+        \end{minipage}
+        \begin{minipage}{0.3\textwidth}
+          \centering\texttt{RIGHT}
+        \end{minipage}
+      \end{center}
+
+      The SPN models a stochastic policy $\pi$ that attributes the probabilities of each action given
+      the robot's front camera image feed.
+
+      \vspace{-0.1cm}
+      \begin{center}
+        \includegraphics[width=0.45\textwidth]{demo_0041_shaved.png}
+        \includegraphics[width=0.45\textwidth]{demo_0043_shaved.png}
+      \end{center}
+      \vspace{-0.2cm}
+
+      This is achieved by classifying each frame as either \texttt{LEFT}, \texttt{FORWARD} or
+      \texttt{RIGHT}.
+    \end{minipage}
+  \end{center}
+}
+
+\headerbox{5. Results}{name=results,column=0,span=6,below=spn}{
+  \begin{center}
+    \begin{minipage}[t][11.75cm]{0.98\textwidth}
+      \begin{minipage}{0.49\textwidth}
+        Models were trained on single-track data obtained by [4].
+
+        \begin{center}
+          \begin{minipage}{0.45\textwidth}
+            \includegraphics[width=0.9\textwidth]{montage_raw.png}
+          \end{minipage}
+          \begin{minipage}{0.45\textwidth}
+            \includegraphics[width=0.9\textwidth]{train_track_resize.png}
+          \end{minipage}
+        \end{center}
+
+        A pre-processing step was applied, either binarization, quantization or histogram
+        equalization.
+
+        \begin{center}
+          \resizebox{0.8\columnwidth}{!}{
+            \begin{tikzpicture}
+              \node[inner sep=0pt, label=Raw] (raw) at (0, 0)
+                {\includegraphics{pipe_raw.png}};
+              \node[inner sep = 0pt, right = 2.0cm of raw, label=Gray] (gray)
+                {\includegraphics{pipe_gray.png}};
+              \node[inner sep = 0pt, right = 2.0cm of gray, label=Binarized] (bin)
+                {\includegraphics{pipe_bin.png}};
+              \node[rectangle, rounded corners, draw, below = 1.75cm of gray,
+                minimum size=2cm] (weights) {LearnWeight};
+              \node[rectangle, rounded corners, draw, right = 2.0cm of weights,
+                minimum size=2cm] (struct) {LearnStructure};
+              \node[cylinder, shape border rotate=90, draw, left = 2.0cm of weights,
+                label=below:SaveDisk, minimum width=2cm, minimum height=1cm] (save) {};
+              \node[inner sep = 0.75cm, rectangle, dashed, draw, thick, fit=(raw) (gray) (bin),
+                label=above:\textbf{Pre-processing}] (pp) {};
+              \node[inner sep = 0.5cm, rectangle, dotted, draw, thick, fit=(struct) (weights) (save),
+                label=above:\textbf{Training}] (train) {};
+              \draw[->,thick] (raw.east) -- (gray.west);
+              \draw[->,thick] (gray.east) -- (bin.west);
+              \draw[->,thick] let \p1 = (train.east), \p2 = (pp.east) in
+                (\p2) -- ($ (\p2) + (0.5, 0) $) -- ($ (\x2, \y1) + (0.5, 0) $) -- (\p1);
+              \draw[->,thick] (struct.west) -- (weights.east);
+              \draw[->,thick] (weights.west) -- (save.east);
+              \node[cylinder, shape border rotate=90, draw, below = 2.50cm of save,
+                label=below:LoadDisk, minimum width=2cm, minimum height = 1cm] (load) {};
+              \node[rectangle, rounded corners, draw, right = 2.0cm of load,
+                minimum size=2cm] (build) {BuildSPN};
+              \node[rectangle, rounded corners, draw, right = 2.0cm of build, right = 3.0cm of build,
+                minimum size=2cm] (infer) {Inference};
+              \node[inner sep = 0.5cm, rectangle, dotted, draw, thick, fit=(load) (build),
+                label=below:\textbf{SPN loading}] (create) {};
+              \node[below = 1.0cm of infer] (pred) {Predicted: RIGHT};
+              \draw[->,thick] (raw.east) -- (gray.west);
+              \draw[->,thick] (gray.east) -- (bin.west);
+              \draw[->,thick] let \p1 = (infer.east), \p2 = (pp.east) in
+                (\p2) -- ($ (\p2) + (0.5, 0) $) -- ($ (\x2, \y1) + (0.5, 0) $) -- (\p1);
+              \draw[->,thick] (load) -- (build);
+              \draw[->,thick] (create) -- (infer);
+              \draw[->,thick] (infer) -- (pred);
+              \draw[->,thick] let \p3 = (save.west), \p4 = (load.west) in
+                ($ (\p3) - (0.5, 0) $) -- ($ (\p3) - (1.5, 0) $) -- ($ (\x3, \y4) - (1.5, 0) $) -- ($ (\p4) - (0.5, 0) $);
+            \end{tikzpicture}
+          }
+        \end{center}
+      \end{minipage}
+      \hfill
+      \begin{minipage}{0.49\textwidth}
+        Models were evaluated on three different test tracks, with different lighting and floor
+        conditions.
+
+        \begin{center}
+          \includegraphics[width=0.3\textwidth]{track_0.png}
+          \includegraphics[width=0.3\textwidth]{track_1.png}
+          \includegraphics[width=0.3\textwidth]{track_2.png}
+        \end{center}
+
+        Compared to neural networks, SPNs achieved slightly lower accuracy, but were degrees of
+        scale faster on prediction.
+        \begin{center}
+          \centering
+          \begin{tabular}{l|c|c}
+            \textbf{Model} & \textbf{Accuracy (\%)} & \textbf{Speed (seconds)}\\
+            \hline
+            DFN & 81.3 & $\approx$1.35\\
+            CNN & 80.6 & $\approx$1.35\\
+            \hline
+            1: $Q_4$, GD-SPN+d & 78.2 & $\approx$0.70\\
+            2: $Q_6$, GD-SPN+d & 74.4 & $\approx$0.15\\
+            3: GD-SPN+d & 62.4 & $\approx$0.07
+          \end{tabular}
+        \end{center}
+
+        \begin{itemize}
+          \item DFNs and CNNs were more accurate, but too slow;
+          \item All SPN models were much faster compared to neural networks;
+          \item Timely decisions are more important than accurate ones.
+        \end{itemize}
+
+        \begin{minipage}{0.55\textwidth}
+          Video of each model in each track can be found through the following QR code or URL link.
+          \vspace{0.25cm}
+
+          \begin{flushright}
+            \url{https://youtu.be/vhpWQDX2cQU}
+          \end{flushright}
+        \end{minipage}
+        \begin{minipage}{0.55\textwidth}
+          \vspace{-0.2cm}
+          \hspace{1.5cm}\includegraphics[width=2.25cm]{qr.png}
+        \end{minipage}
+      \end{minipage}
+    \end{minipage}
+  \end{center}
+}
+
+\headerbox{6. References and Acknowledgements} {name=references,column=0,span=6,below=results}{
 %\small % Reduce the font size in this block
-\begin{minipage}{0.8\textwidth}
+\begin{minipage}{0.725\textwidth}
 \renewcommand{\section}[2]{\vskip 0.0em} % Get rid of the default "References" section title
 %\nocite{*} % Insert publications even if they are not cited in the poster
 
@@ -208,9 +368,20 @@ Renato Lui Geh, Denis Deratani Mauá
 \bibliography{references}} % Use sample.bib as the bibliography file
 \end{minipage}
 \hfill
-\begin{minipage}{0.2\textwidth}
+\begin{minipage}{0.275\textwidth}
 \begin{center}
-\includegraphics[scale=0.35]{cnpq.jpg}
+% For KHIPU
+%\includegraphics[scale=0.35]{cnpq.jpg}
+% For EPPC
+  \begin{minipage}{0.3\textwidth}
+    \centering\includegraphics[width=\textwidth]{cnpq.jpg}
+  \end{minipage}
+  \begin{minipage}{0.3\textwidth}
+    \centering\includegraphics[width=0.5\textwidth]{capes_logo.png}
+  \end{minipage}
+  \begin{minipage}{0.3\textwidth}
+    \centering\includegraphics[width=\textwidth]{fapesp.png}
+  \end{minipage}
 \end{center}
 \end{minipage}
 }
